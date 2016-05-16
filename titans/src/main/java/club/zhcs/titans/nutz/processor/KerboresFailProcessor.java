@@ -2,8 +2,6 @@ package club.zhcs.titans.nutz.processor;
 
 import org.nutz.json.JsonFormat;
 import org.nutz.lang.Strings;
-import org.nutz.log.Log;
-import org.nutz.log.Logs;
 import org.nutz.mvc.ActionContext;
 import org.nutz.mvc.ActionInfo;
 import org.nutz.mvc.Mvcs;
@@ -19,8 +17,6 @@ import club.zhcs.titans.utils.db.Result;
  */
 public class KerboresFailProcessor extends FailProcessor {
 
-	private static final Log log = Logs.get();
-
 	private String okView;
 
 	@Override
@@ -34,10 +30,6 @@ public class KerboresFailProcessor extends FailProcessor {
 		if (Strings.equals(okView, "json") && ac.getError() != null) {// 产生了错误而且是json视图
 			Mvcs.write(ac.getResponse(), Result.exception(ac.getError().getMessage()), JsonFormat.nice());// 写回错误信息
 			return;
-		}
-		if (log.isWarnEnabled()) {
-			String uri = Mvcs.getRequestPath(ac.getRequest());
-			log.warn(String.format("Error@%s :", uri), ac.getError());
 		}
 		super.process(ac);
 	}

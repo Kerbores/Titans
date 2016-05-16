@@ -3,6 +3,13 @@ package club.zhcs.titans.nutz.chain;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.nutz.lang.ContinueLoop;
+import org.nutz.lang.Each;
+import org.nutz.lang.ExitLoop;
+import org.nutz.lang.Lang;
+import org.nutz.lang.LoopException;
+import org.nutz.log.Log;
+import org.nutz.log.Logs;
 import org.nutz.mvc.ActionChain;
 import org.nutz.mvc.ActionChainMaker;
 import org.nutz.mvc.ActionInfo;
@@ -35,13 +42,29 @@ import club.zhcs.titans.nutz.processor.KerboresFailProcessor;
  *
  */
 public class KerboresActionChainMaker implements ActionChainMaker {
+	private Log log = Logs.get();
 
 	@Override
-	public ActionChain eval(NutConfig config, ActionInfo ai) {
+	public ActionChain eval(final NutConfig config, final ActionInfo ai) {
 		List<Processor> list = normalList();
-
 		// 最后是专门负责兜底的异常处理器
 		Processor error = new KerboresFailProcessor();
+		Lang.each(list, new Each<Processor>() {
+
+			@Override
+			public void invoke(int paramInt1, Processor processor, int paramInt2) throws ExitLoop, ContinueLoop, LoopException {
+				try {
+					processor.init(config, ai);
+				} catch (Throwable e) {
+					log.error(e);
+				}
+			}
+		});
+		try {
+			error.init(config, ai);
+		} catch (Throwable e) {
+			e.printStackTrace();
+		}
 		return new NutActionChain(list, error, ai);
 	}
 
