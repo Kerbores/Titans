@@ -48,7 +48,6 @@ public class DES {
 		try {
 			bt = encrypt(data.getBytes(), key.getBytes());
 		} catch (Exception e) {
-			e.printStackTrace();
 			log.error(e);
 		}
 		return Base64.encodeToString(bt, false);
@@ -73,7 +72,6 @@ public class DES {
 		try {
 			bt = decrypt(buf, key.getBytes());
 		} catch (Exception e) {
-			e.printStackTrace();
 			log.error(e);
 		}
 		return new String(bt);
