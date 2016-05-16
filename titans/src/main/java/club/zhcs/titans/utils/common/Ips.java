@@ -12,7 +12,7 @@ import java.util.Enumeration;
  *
  * @file Ips.java
  *
- * @description // TODO write some description of this class
+ * @description IP工具
  *
  * @time 2016年3月15日 下午4:21:37
  *
@@ -23,15 +23,12 @@ public class Ips {
 		try {
 			Enumeration allNetInterfaces = NetworkInterface.getNetworkInterfaces();
 			InetAddress ip = null;
-			while (allNetInterfaces.hasMoreElements())
-			{
+			while (allNetInterfaces.hasMoreElements()) {
 				NetworkInterface netInterface = (NetworkInterface) allNetInterfaces.nextElement();
 				Enumeration addresses = netInterface.getInetAddresses();
-				while (addresses.hasMoreElements())
-				{
+				while (addresses.hasMoreElements()) {
 					ip = (InetAddress) addresses.nextElement();
-					if (ip != null && ip instanceof Inet4Address)
-					{
+					if (ip != null && ip instanceof Inet4Address) {
 						return ip.getHostAddress();
 					}
 				}

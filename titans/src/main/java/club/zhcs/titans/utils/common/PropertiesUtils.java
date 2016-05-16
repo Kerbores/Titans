@@ -10,10 +10,19 @@ import org.nutz.lang.Times;
 import org.nutz.lang.util.NutMap;
 
 /**
- * @author 王贵源
- * @description //TODO
- * @Copyright 内部代码,禁止转发
- * @date 2016年3月23日 上午8:26:21
+ * 
+ * 
+ * @author Kerbores(kerbores@gmail.com)
+ *
+ * @project titans
+ *
+ * @file PropertiesUtils.java
+ *
+ * @description Properties操作工具
+ *
+ * @copyright 内部代码,禁止转发
+ *
+ * @time 2016年5月16日 下午10:50:54
  *
  */
 public class PropertiesUtils {
