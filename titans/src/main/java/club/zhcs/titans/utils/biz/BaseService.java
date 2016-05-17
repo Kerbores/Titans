@@ -9,6 +9,7 @@ import org.nutz.dao.Cnd;
 import org.nutz.dao.Condition;
 import org.nutz.dao.DaoException;
 import org.nutz.dao.FieldFilter;
+import org.nutz.dao.Sqls;
 import org.nutz.dao.entity.Record;
 import org.nutz.dao.entity.annotation.Column;
 import org.nutz.dao.entity.annotation.Id;
@@ -258,6 +259,12 @@ public class BaseService<T extends Entity> extends IdNameEntityService<T> {
 		return SqlActuator.runReport(sql, dao());
 	}
 
+	public List<NutMap> searchAsMap(Sql sql) {
+		sql.setCallback(Sqls.callback.maps());
+		dao().execute(sql);
+		return sql.getList(NutMap.class);
+	}
+
 	public T fetchObj(Sql sql) {
 		return SqlActuator.run(sql, dao(), getEntityClass());
 	}
@@ -268,6 +275,16 @@ public class BaseService<T extends Entity> extends IdNameEntityService<T> {
 
 	public int deleteOrUpdate(Sql sql) {
 		return SqlActuator.runUpdate(sql, dao());
+	}
+
+	/**
+	 * 创建sql对象
+	 * 
+	 * @param key
+	 * @return
+	 */
+	public Sql create(String key) {
+		return dao().sqls().create(key);
 	}
 
 	// biz
