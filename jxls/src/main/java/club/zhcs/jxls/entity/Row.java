@@ -1,6 +1,5 @@
 package club.zhcs.jxls.entity;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
@@ -12,9 +11,12 @@ import jxl.write.Label;
 import jxl.write.Number;
 import jxl.write.WritableCell;
 
+import org.nutz.json.Json;
 import org.nutz.lang.Lang;
+import org.nutz.lang.util.NutMap;
 
-import club.zhcs.jxls.anno.Ignore;
+import club.zhcs.jxls.FieldMapper;
+import club.zhcs.jxls.FieldMapper.MapperNode;
 
 public class Row {
 	private List<WritableCell> labels;
@@ -74,8 +76,8 @@ public class Row {
 		this.labels = ls;
 	}
 
-	public Row(int rNum, Object obj) {
-		this(rNum, toList(obj));
+	public Row(int rNum, Object obj, FieldMapper mapper) {
+		this(rNum, toList(obj, mapper));
 	}
 
 	private static WritableCell createLabel(int col, int row, Object data) {
@@ -93,24 +95,11 @@ public class Row {
 		return new Label(col, row, null == data ? "" : data.toString());
 	}
 
-	private static List toList(Object obj) {
-		if (obj instanceof Map) {
-			Map<String, Object> data = Lang.obj2map(obj);
-			return Lang.collection2list(data.values(), Object.class);
-		}
+	private static List toList(Object obj, FieldMapper mapper) {
 		List list = new ArrayList();
-		for (Field field : obj.getClass().getDeclaredFields()) {
-			if (!field.isAccessible())
-				field.setAccessible(true);
-			try {
-				if ((field.getAnnotation(Ignore.class) != null) && (field.getAnnotation(Ignore.class).value()))
-					continue;
-				list.add(field.get(obj));
-			} catch (IllegalArgumentException e) {
-				e.printStackTrace();
-			} catch (IllegalAccessException e) {
-				e.printStackTrace();
-			}
+		NutMap temp = Lang.map(Json.toJson(obj));
+		for (MapperNode node : mapper.getNodes()) {
+			list.add(temp.get(node.getField()));
 		}
 		return list;
 	}
