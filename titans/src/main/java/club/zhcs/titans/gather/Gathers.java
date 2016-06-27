@@ -42,8 +42,10 @@ public class Gathers {
 		data.put("disk", disks);
 		long totle = 0, used = 0;
 		for (DISKGather disk : disks) {
-			totle += disk.getStat().getTotal();
-			used = disk.getStat().getUsed();
+			if (disk.getStat() != null) {
+				totle += disk.getStat().getTotal();
+				used += disk.getStat().getUsed();
+			}
 		}
 		data.put("diskUsage", used * 100 / totle);
 
