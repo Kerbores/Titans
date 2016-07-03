@@ -36,8 +36,10 @@ public class DISKGather {
 		FileSystem[] fsArr = sigar.getFileSystemList();
 		List<DISKGather> fsList = new ArrayList<DISKGather>();
 		for (FileSystem fs : fsArr) {
-			DISKGather fsData = DISKGather.gather(sigar, fs);
-			fsList.add(fsData);
+			if (fs.getType() == FileSystem.TYPE_LOCAL_DISK) {
+				DISKGather fsData = DISKGather.gather(sigar, fs);
+				fsList.add(fsData);
+			}
 		}
 
 		return fsList;

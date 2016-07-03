@@ -32,14 +32,20 @@ public class Gathers {
 		data.put("memory", memory);
 		data.put("ramUasge", memory.getMem().getUsedPercent());
 		data.put("jvmUasge", memory.getJvm().getUsedPercent());
-		data.put("swapUasge", memory.getSwap().getUsed() * 100 / memory.getSwap().getTotal());
+		if (memory.getSwap().getTotal() == 0) {
+			data.put("swapUasge", 0);
+		} else {
+			data.put("swapUasge", memory.getSwap().getUsed() * 100 / memory.getSwap().getTotal());
+		}
 
 		List<DISKGather> disks = DISKGather.gather(sigar);
 		data.put("disk", disks);
 		long totle = 0, used = 0;
 		for (DISKGather disk : disks) {
-			totle += disk.getStat().getTotal();
-			used = disk.getStat().getUsed();
+			if (disk.getStat() != null) {
+				totle += disk.getStat().getTotal();
+				used += disk.getStat().getUsed();
+			}
 		}
 		data.put("diskUsage", used * 100 / totle);
 
