@@ -1,23 +1,33 @@
 package club.zhcs.matic.db;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.PrintStream;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
+import javax.sql.DataSource;
 
 import org.nutz.dao.DB;
 import org.nutz.dao.Dao;
-import org.nutz.dao.Sqls;
-import org.nutz.dao.entity.Record;
 import org.nutz.dao.impl.NutDao;
 import org.nutz.dao.impl.SimpleDataSource;
-import org.nutz.dao.sql.Sql;
+import org.nutz.json.Json;
 import org.nutz.lang.ContinueLoop;
 import org.nutz.lang.Each;
 import org.nutz.lang.ExitLoop;
-import org.nutz.lang.Files;
 import org.nutz.lang.Lang;
 import org.nutz.lang.LoopException;
+import org.nutz.lang.Strings;
+import org.nutz.log.Log;
+import org.nutz.log.Logs;
+
+import club.zhcs.matic.Config;
+import club.zhcs.matic.meta.Field;
+import club.zhcs.matic.meta.Table;
 
 /**
  * 
@@ -33,6 +43,8 @@ import org.nutz.lang.LoopException;
  */
 public class DBLoader {
 
+	private static final Log log = Logs.get();
+
 	/**
 	 * 获取dao对象
 	 * 
@@ -40,11 +52,25 @@ public class DBLoader {
 	 * @return
 	 */
 	public static Dao dao(DBProperties db) {
+		return new NutDao(dataSource(db));
+	}
+
+	public static Connection connection(DBProperties db) throws SQLException {
+		return dataSource(db).getConnection();
+	}
+
+	/**
+	 * 获取数据源
+	 * 
+	 * @param db
+	 * @return
+	 */
+	public static DataSource dataSource(DBProperties db) {
 		SimpleDataSource dataSource = new SimpleDataSource();
 		dataSource.setJdbcUrl(db.getJDBCUrl());
 		dataSource.setUsername(db.getUser());
 		dataSource.setPassword(db.getPassword());
-		return new NutDao(dataSource);
+		return dataSource;
 	}
 
 	/**
@@ -53,50 +79,111 @@ public class DBLoader {
 	 * @param db
 	 * @return
 	 */
-	public static List<Record> tables(DBProperties db) {
-		String sql_ = null;
-		switch (db.getType()) {
-		case MYSQL:
-			sql_ = "SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = @schame";
-			break;
+	public static List<Table> tables(DBProperties db) {
+		Connection connection = null;
+		List<Table> tables = new ArrayList<Table>();
+		try {
+			connection = connection(db);
+			final DatabaseMetaData metaData = connection.getMetaData();
+			ResultSet tableResultset = metaData.getTables(null, null, null, new String[] { "TABLE" });
+			while (tableResultset.next()) {
+				Table table = new Table();
+				tables.add(table);
+				// 对表信息进行处理
+				table.setTableName(tableResultset.getString("TABLE_NAME"));
 
-		default:
-			break;
+				table.setClassName(Config.getTableMapping().get(table.getTableName()));// 如果有设置表名和类名映射
+				if (table.getClassName() == null) {
+					table.setClassName(toName(table.getTableName()));
+				}
+				table.setComment(tableResultset.getString("REMARKS"));
+			}
+			if (log.isInfoEnabled())
+				log.infof("Load %d tables", tables.size());
+			if (log.isDebugEnabled())
+				log.debug("Tables:\n" + tables);
+
+			// 处理表的字段们
+			Lang.each(tables, new Each<Table>() {
+
+				@Override
+				public void invoke(int index, Table table, int length) throws ExitLoop, ContinueLoop, LoopException {
+					try {
+						Set<String> pks = new HashSet<String>();
+						ResultSet pkResultSet;
+						pkResultSet = metaData.getPrimaryKeys(null, null, table.getTableName());
+						while (pkResultSet.next()) {
+							pks.add(pkResultSet.getString("COLUMN_NAME"));
+						}
+						ResultSet columnResultset = metaData.getColumns(null, null, table.getTableName(), null);
+						while (columnResultset.next()) {
+							Field zField = new Field();
+							zField.dbFieldName = columnResultset.getString("COLUMN_NAME");
+							zField.notNull = "NO".equals(columnResultset.getString("IS_NULLABLE"));
+							zField.dbFieldType = columnResultset.getString("TYPE_NAME");
+							zField.fieldName = Config.getTableFieldMapping().get(table.getTableName() + "." + zField.dbFieldName);
+							if (zField.fieldName == null)
+								zField.fieldName = Config.getTableFieldMapping().get("*." + zField.dbFieldName);
+							if (zField.fieldName == null)
+								zField.fieldName = Strings.lowerFirst(toName(zField.dbFieldName));
+							if (pks.contains(zField.dbFieldName))
+								zField.isPrimaryKey = true;
+
+							// 推断字段的Java类型
+							zField.classTypeName = Config.getTypeMapping().get(zField.dbFieldType);
+							if (zField.classTypeName == null) {
+								log.warnf("Unkown type_name %s.%s, skip!", table.getTableName(), zField.dbFieldName);
+								continue;
+							}
+
+							zField.comment = columnResultset.getString("REMARKS");
+							if (zField.comment == null)
+								zField.comment = "";
+
+							table.getFields().add(zField);
+						}
+					} catch (SQLException e) {
+						e.printStackTrace();
+					}
+				}
+			});
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				connection.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
 		}
-		Sql sql = Sqls.create(sql_);
-		sql.params().set("schame", db.getSchame());
-		sql.setCallback(Sqls.callback.records());
-		dao(db).execute(sql);
-
-		return sql.getList(Record.class);
+		return tables;
 	}
 
 	/**
-	 * 获取表的结构描述
+	 * 蛇形转换驼峰
 	 * 
-	 * @param dao
-	 * @param table
+	 * @param srcName
 	 * @return
 	 */
-	public static List<Record> columns(Dao dao, String table) {
-
-		String sql_ = null;
-		switch (dao.meta().getType()) {
-		case MYSQL:
-			sql_ = "select * from INFORMATION_SCHEMA.columns where table_name= @table";
-			break;
-
-		default:
-			break;
+	public static final String toName(String srcName) {
+		if (Strings.isBlank(srcName))
+			return "";
+		srcName = srcName.toLowerCase();
+		System.err.println(Json.toJson(Config.getOther()));
+		for (String prefix : Config.getOther().get("table_prefix").split(",")) {
+			if (srcName.startsWith(prefix))
+				srcName = srcName.substring(prefix.length());
 		}
-		Sql sql = Sqls.create(sql_);
-		sql.params().set("table", table);
-		sql.setCallback(Sqls.callback.records());
-		dao.execute(sql);
-		return sql.getList(Record.class);
+		String[] names = srcName.split("_");
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < names.length; i++) {
+			sb.append(Strings.upperFirst(names[i]));
+		}
+		return sb.toString();
 	}
 
-	public static void main(String[] args) throws FileNotFoundException, IOException {
+	public static void main(String[] args) {
 		DBProperties db = new DBProperties();
 		db.setType(DB.MYSQL);
 		db.setDbAddress("127.0.0.1");
@@ -104,19 +191,7 @@ public class DBLoader {
 		db.setSchame("tdb");
 		db.setUser("root");
 		db.setPassword("123456");
-		System.err.println(db.getJDBCUrl());
-
-		final Dao dao = dao(db);
-		System.setErr(new PrintStream(Files.createFileIfNoExists("log.txt")));
-
-		Lang.each(tables(db), new Each<Record>() {
-
-			@Override
-			public void invoke(int index, Record ele, int length) throws ExitLoop, ContinueLoop, LoopException {
-				System.err.println("-------------Table name---------------> " + ele.getString("table_name"));
-				System.err.println(DBLoader.columns(dao, ele.getString("table_name")));
-			}
-		});
+		System.err.println(tables(db));
 	}
 
 }
