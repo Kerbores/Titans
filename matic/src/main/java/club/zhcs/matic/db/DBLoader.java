@@ -1,7 +1,6 @@
 package club.zhcs.matic.db;
 
 import java.io.IOException;
-import java.io.PrintStream;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
@@ -20,7 +19,6 @@ import org.nutz.dao.impl.SimpleDataSource;
 import org.nutz.lang.ContinueLoop;
 import org.nutz.lang.Each;
 import org.nutz.lang.ExitLoop;
-import org.nutz.lang.Files;
 import org.nutz.lang.Lang;
 import org.nutz.lang.LoopException;
 import org.nutz.lang.Strings;
@@ -100,10 +98,6 @@ public class DBLoader {
 				}
 				table.setComment(tableResultset.getString("REMARKS"));
 			}
-			if (log.isInfoEnabled())
-				log.infof("Load %d tables", tables.size());
-			if (log.isDebugEnabled())
-				log.debug("Tables:\n" + tables);
 
 			// 处理表的字段们
 			Lang.each(tables, new Each<Table>() {
@@ -159,6 +153,10 @@ public class DBLoader {
 				e.printStackTrace();
 			}
 		}
+		if (log.isInfoEnabled())
+			log.infof("Load %d tables", tables.size());
+		if (log.isDebugEnabled())
+			log.debug("Tables:\n" + tables);
 		return tables;
 	}
 
@@ -205,8 +203,7 @@ public class DBLoader {
 		db.setSchame("tdb");
 		db.setUser("root");
 		db.setPassword("123456");
-		System.setErr(new PrintStream(Files.createFileIfNoExists("log.txt")));
-		System.err.println(tables(db));
+		tables(db);
 	}
 
 }
