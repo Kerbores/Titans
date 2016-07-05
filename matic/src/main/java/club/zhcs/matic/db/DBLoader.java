@@ -1,5 +1,8 @@
 package club.zhcs.matic.db;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.PrintStream;
 import java.util.List;
 
 import org.nutz.dao.DB;
@@ -12,6 +15,7 @@ import org.nutz.dao.sql.Sql;
 import org.nutz.lang.ContinueLoop;
 import org.nutz.lang.Each;
 import org.nutz.lang.ExitLoop;
+import org.nutz.lang.Files;
 import org.nutz.lang.Lang;
 import org.nutz.lang.LoopException;
 
@@ -92,7 +96,7 @@ public class DBLoader {
 		return sql.getList(Record.class);
 	}
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws FileNotFoundException, IOException {
 		DBProperties db = new DBProperties();
 		db.setType(DB.MYSQL);
 		db.setDbAddress("127.0.0.1");
@@ -103,6 +107,7 @@ public class DBLoader {
 		System.err.println(db.getJDBCUrl());
 
 		final Dao dao = dao(db);
+		System.setErr(new PrintStream(Files.createFileIfNoExists("log.txt")));
 
 		Lang.each(tables(db), new Each<Record>() {
 
