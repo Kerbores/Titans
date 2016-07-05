@@ -1,5 +1,7 @@
 package club.zhcs.matic.db;
 
+import java.io.IOException;
+import java.io.PrintStream;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
@@ -15,10 +17,10 @@ import org.nutz.dao.DB;
 import org.nutz.dao.Dao;
 import org.nutz.dao.impl.NutDao;
 import org.nutz.dao.impl.SimpleDataSource;
-import org.nutz.json.Json;
 import org.nutz.lang.ContinueLoop;
 import org.nutz.lang.Each;
 import org.nutz.lang.ExitLoop;
+import org.nutz.lang.Files;
 import org.nutz.lang.Lang;
 import org.nutz.lang.LoopException;
 import org.nutz.lang.Strings;
@@ -94,7 +96,7 @@ public class DBLoader {
 
 				table.setClassName(Config.getTableMapping().get(table.getTableName()));// 如果有设置表名和类名映射
 				if (table.getClassName() == null) {
-					table.setClassName(toName(table.getTableName()));
+					table.setClassName(toName(table.getTableName(), false));
 				}
 				table.setComment(tableResultset.getString("REMARKS"));
 			}
@@ -125,7 +127,7 @@ public class DBLoader {
 							if (zField.fieldName == null)
 								zField.fieldName = Config.getTableFieldMapping().get("*." + zField.dbFieldName);
 							if (zField.fieldName == null)
-								zField.fieldName = Strings.lowerFirst(toName(zField.dbFieldName));
+								zField.fieldName = Strings.lowerFirst(toName(zField.dbFieldName, true));
 							if (pks.contains(zField.dbFieldName))
 								zField.isPrimaryKey = true;
 
@@ -166,14 +168,26 @@ public class DBLoader {
 	 * @param srcName
 	 * @return
 	 */
-	public static final String toName(String srcName) {
+	public static final String toName(String srcName, boolean isColumn) {
 		if (Strings.isBlank(srcName))
 			return "";
+		boolean found = false;
 		srcName = srcName.toLowerCase();
-		System.err.println(Json.toJson(Config.getOther()));
-		for (String prefix : Config.getOther().get("table_prefix").split(",")) {
-			if (srcName.startsWith(prefix))
-				srcName = srcName.substring(prefix.length());
+		if (!isColumn) {
+			for (String prefix : Config.getOther().get("table_prefix").split(",")) {
+				if (srcName.startsWith(prefix))
+					srcName = srcName.substring(prefix.length());
+			}
+		} else {
+			for (String prefix : Config.getOther().get("column_prefix").split(",")) {
+				if (srcName.startsWith(prefix)) {
+					found = true;
+					srcName = srcName.substring(prefix.length());
+				}
+			}
+		}
+		if (!found && isColumn) {
+			srcName = srcName.substring(srcName.indexOf("_") + 1);
 		}
 		String[] names = srcName.split("_");
 		StringBuilder sb = new StringBuilder();
@@ -183,7 +197,7 @@ public class DBLoader {
 		return sb.toString();
 	}
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
 		DBProperties db = new DBProperties();
 		db.setType(DB.MYSQL);
 		db.setDbAddress("127.0.0.1");
@@ -191,6 +205,7 @@ public class DBLoader {
 		db.setSchame("tdb");
 		db.setUser("root");
 		db.setPassword("123456");
+		System.setErr(new PrintStream(Files.createFileIfNoExists("log.txt")));
 		System.err.println(tables(db));
 	}
 
