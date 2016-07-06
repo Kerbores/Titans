@@ -33,6 +33,10 @@ public class Table extends Meta {
 
 	private List<Field> fields = new ArrayList<Field>();
 
+	public String getLowerClassName() {
+		return className.toLowerCase();
+	}
+
 	/**
 	 * @return the comment
 	 */
