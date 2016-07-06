@@ -1,5 +1,7 @@
 package club.zhcs.matic.meta;
 
+import org.nutz.lang.Strings;
+
 /**
  * 
  * @author 王贵源
@@ -30,6 +32,10 @@ public class Field extends Meta {
 	 */
 	public String getDbFieldName() {
 		return dbFieldName;
+	}
+
+	public String getFieldName1() {
+		return Strings.upperFirst(fieldName);
 	}
 
 	/**

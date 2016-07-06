@@ -1,5 +1,10 @@
 package club.zhcs.matic.meta;
 
+import java.util.List;
+
+import club.zhcs.matic.db.DBLoader;
+import club.zhcs.matic.db.DBProperties;
+
 /**
  * 
  * @author 王贵源
@@ -25,6 +30,107 @@ public class Project extends Meta {
 	 * 输出路径名
 	 */
 	private String output;
+
+	/**
+	 * 组织
+	 */
+	private String group;
+
+	/**
+	 * 版本
+	 */
+	private String version;
+
+	private DBProperties db;
+
+	private List<Table> tables;
+
+	/**
+	 * @param name
+	 * @param packageName
+	 * @param output
+	 * @param group
+	 * @param version
+	 * @param db
+	 */
+	public Project(String name, String packageName, String output, String group, String version, DBProperties db) {
+		super();
+		this.name = name;
+		this.packageName = packageName;
+		this.output = output;
+		this.group = group;
+		this.version = version;
+		this.db = db;
+		this.tables = DBLoader.tables(db);
+	}
+
+	public String getPackagePath() {
+		String target = "";
+		for (String s : packageName.split("\\.")) {
+			target += s + "/";
+		}
+		return target;
+	}
+
+	/**
+	 * @return the db
+	 */
+	public DBProperties getDb() {
+		return db;
+	}
+
+	/**
+	 * @param db
+	 *            the db to set
+	 */
+	public void setDb(DBProperties db) {
+		this.db = db;
+	}
+
+	/**
+	 * @return the tables
+	 */
+	public List<Table> getTables() {
+		return tables;
+	}
+
+	/**
+	 * @param tables
+	 *            the tables to set
+	 */
+	public void setTables(List<Table> tables) {
+		this.tables = tables;
+	}
+
+	/**
+	 * @return the group
+	 */
+	public String getGroup() {
+		return group;
+	}
+
+	/**
+	 * @param group
+	 *            the group to set
+	 */
+	public void setGroup(String group) {
+		this.group = group;
+	}
+
+	/**
+	 * @return the version
+	 */
+	public String getVersion() {
+		return version;
+	}
+
+	/**
+	 * @param version
+	 *            the version to set
+	 */
+	public void setVersion(String version) {
+		this.version = version;
+	}
 
 	/**
 	 * @return the name
