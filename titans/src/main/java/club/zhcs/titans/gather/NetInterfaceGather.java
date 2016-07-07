@@ -75,8 +75,8 @@ public class NetInterfaceGather {
 				long tt = statStart.getTxBytes();
 				Date now = Times.now();
 
-				rxbps = (rt - rTemp) * 8 * 1000 / (now.getTime() - last.getTime());
-				txbps = (tt - tTemp) * 8 * 1000 / (now.getTime() - last.getTime());
+				rxbps = (rt - rTemp) * 1000 * 1024 / (now.getTime() - last.getTime());
+				txbps = (tt - tTemp) * 1000 * 1024 / (now.getTime() - last.getTime());
 
 				rTemp = rt;
 				tTemp = tt;
