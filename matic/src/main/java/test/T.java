@@ -29,11 +29,11 @@ public class T {
 		db.setType(DB.MYSQL);
 		db.setDbAddress("127.0.0.1");
 		db.setPort(3306);
-		db.setSchame("tdb");
+		db.setSchame("syl-2.0");
 		db.setUser("root");
 		db.setPassword("123456");
 
-		Project p = new Project("tdb", "club.zhcs.tdb", "C:/gen/tdb", "club.zhcs", "1.0", db);
+		Project p = new Project("syl", "com.syl.platform", "C:/gen/tdb", "com.syl", "2.0", db);
 
 		MavenProjectGener mavenProjectGener = new MavenProjectGener();
 		System.err.println(mavenProjectGener.gen(p));
