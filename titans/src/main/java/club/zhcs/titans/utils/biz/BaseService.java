@@ -7,6 +7,7 @@ import java.util.List;
 import org.nutz.dao.Chain;
 import org.nutz.dao.Cnd;
 import org.nutz.dao.Condition;
+import org.nutz.dao.Dao;
 import org.nutz.dao.DaoException;
 import org.nutz.dao.FieldFilter;
 import org.nutz.dao.Sqls;
@@ -15,7 +16,6 @@ import org.nutz.dao.entity.annotation.Column;
 import org.nutz.dao.entity.annotation.Id;
 import org.nutz.dao.sql.Sql;
 import org.nutz.ioc.impl.PropertiesProxy;
-import org.nutz.ioc.loader.annotation.Inject;
 import org.nutz.ioc.loader.annotation.IocBean;
 import org.nutz.json.Json;
 import org.nutz.lang.Lang;
@@ -39,13 +39,20 @@ import club.zhcs.titans.utils.db.po.Entity;
  * @time 2016年3月14日 下午9:22:16
  *
  */
-@IocBean(fields = "dao")
+@IocBean(fields = { "dao", "config" })
 public class BaseService<T extends Entity> extends IdNameEntityService<T> {
 
 	protected int PAGESIZE = config() == null ? 15 : config().getInt("pageSize", 15);
 
-	@Inject("config")
 	protected PropertiesProxy config;
+
+	/**
+	 * @param config
+	 */
+	public BaseService(Dao dao, PropertiesProxy config) {
+		super(dao);
+		this.config = config;
+	}
 
 	public PropertiesProxy config() {
 		if (config == null) {
