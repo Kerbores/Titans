@@ -7,7 +7,6 @@ import java.util.List;
 import org.nutz.dao.Chain;
 import org.nutz.dao.Cnd;
 import org.nutz.dao.Condition;
-import org.nutz.dao.Dao;
 import org.nutz.dao.DaoException;
 import org.nutz.dao.FieldFilter;
 import org.nutz.dao.Sqls;
@@ -15,14 +14,15 @@ import org.nutz.dao.entity.Record;
 import org.nutz.dao.entity.annotation.Column;
 import org.nutz.dao.entity.annotation.Id;
 import org.nutz.dao.sql.Sql;
+import org.nutz.ioc.Ioc;
 import org.nutz.ioc.impl.PropertiesProxy;
+import org.nutz.ioc.loader.annotation.Inject;
 import org.nutz.ioc.loader.annotation.IocBean;
 import org.nutz.json.Json;
 import org.nutz.lang.Lang;
 import org.nutz.lang.Mirror;
 import org.nutz.lang.util.NutMap;
 import org.nutz.log.Logs;
-import org.nutz.mvc.Mvcs;
 import org.nutz.service.IdNameEntityService;
 
 import club.zhcs.titans.utils.db.Pager;
@@ -39,31 +39,21 @@ import club.zhcs.titans.utils.db.po.Entity;
  * @time 2016年3月14日 下午9:22:16
  *
  */
-@IocBean(fields = { "dao", "config" })
+@IocBean(fields = { "dao" })
 public class BaseService<T extends Entity> extends IdNameEntityService<T> {
+
+	@Inject("config")
+	protected PropertiesProxy config;
+
+	@Inject("refer:$ioc")
+	protected Ioc ioc;
 
 	protected int PAGESIZE = config() == null ? 15 : config().getInt("pageSize", 15);
 
-	protected PropertiesProxy config;
-
-	/**
-	 * 
-	 */
-	public BaseService() {
-		super();
-	}
-
-	/**
-	 * @param config
-	 */
-	public BaseService(Dao dao, PropertiesProxy config) {
-		super(dao);
-		this.config = config;
-	}
-
 	public PropertiesProxy config() {
+
 		if (config == null) {
-			config = Mvcs.getIoc().get(PropertiesProxy.class, "config");// 没有我就尝试获取一下ioc里面的
+			config = ioc.get(PropertiesProxy.class, "config");// 没有我就尝试获取一下ioc里面的
 		}
 		return config;
 	}
