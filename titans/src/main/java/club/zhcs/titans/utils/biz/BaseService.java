@@ -14,9 +14,7 @@ import org.nutz.dao.entity.Record;
 import org.nutz.dao.entity.annotation.Column;
 import org.nutz.dao.entity.annotation.Id;
 import org.nutz.dao.sql.Sql;
-import org.nutz.ioc.Ioc;
 import org.nutz.ioc.impl.PropertiesProxy;
-import org.nutz.ioc.loader.annotation.Inject;
 import org.nutz.ioc.loader.annotation.IocBean;
 import org.nutz.json.Json;
 import org.nutz.lang.Lang;
@@ -39,22 +37,15 @@ import club.zhcs.titans.utils.db.po.Entity;
  * @time 2016年3月14日 下午9:22:16
  *
  */
-@IocBean(fields = { "dao" })
+@IocBean(fields = { "dao", "config" })
 public class BaseService<T extends Entity> extends IdNameEntityService<T> {
 
-	@Inject("config")
 	protected PropertiesProxy config;
-
-	@Inject("refer:$ioc")
-	protected Ioc ioc;
 
 	protected int PAGESIZE = config() == null ? 15 : config().getInt("pageSize", 15);
 
 	public PropertiesProxy config() {
 
-		if (config == null) {
-			config = ioc.get(PropertiesProxy.class, "config");// 没有我就尝试获取一下ioc里面的
-		}
 		return config;
 	}
 
