@@ -15,6 +15,7 @@ import org.nutz.dao.entity.annotation.Column;
 import org.nutz.dao.entity.annotation.Id;
 import org.nutz.dao.sql.Sql;
 import org.nutz.ioc.impl.PropertiesProxy;
+import org.nutz.ioc.loader.annotation.Inject;
 import org.nutz.ioc.loader.annotation.IocBean;
 import org.nutz.json.Json;
 import org.nutz.lang.Lang;
@@ -43,6 +44,7 @@ public class BaseService<T extends Entity> extends IdNameEntityService<T> {
 
 	protected int PAGESIZE = config() == null ? 15 : config().getInt("pageSize", 15);
 
+	@Inject("config")
 	protected PropertiesProxy config;
 
 	public PropertiesProxy config() {
