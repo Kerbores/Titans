@@ -47,6 +47,13 @@ public class BaseService<T extends Entity> extends IdNameEntityService<T> {
 	protected PropertiesProxy config;
 
 	/**
+	 * 
+	 */
+	public BaseService() {
+		super();
+	}
+
+	/**
 	 * @param config
 	 */
 	public BaseService(Dao dao, PropertiesProxy config) {
