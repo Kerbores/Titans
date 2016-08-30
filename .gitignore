@@ -1,13 +1,10 @@
 *.class
-*.iml
-.idea/
-.DS_Store
-.tern-project/
 
 # Package Files #
 *.jar
 *.war
 *.ear
+*.iml
 
 #workspace Files
 
@@ -15,3 +12,4 @@ target/
 .settings/
 .classpath/
 .project/
+.idea/
