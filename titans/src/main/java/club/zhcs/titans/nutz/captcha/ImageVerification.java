@@ -1,8 +1,10 @@
 package club.zhcs.titans.nutz.captcha;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.util.Random;
 
@@ -47,13 +49,15 @@ public class ImageVerification {
 		g.setFont(new Font("Comic Sans MS", Font.BOLD, 25));
 
 		// 随机产生255条干扰线，使图象中的认证码不易被其它程序探测到
-		for (int i = 0; i < 255; i++) {
+		for (int i = 0; i < 1023; i++) {
 			g.setColor(getRandColor(140, 255));
 			int x = random.nextInt(width);
 			int y = random.nextInt(height);
 			int xl = random.nextInt(100);
 			int yl = random.nextInt(100);
-			g.drawLine(x, y, x + xl, y + yl);
+			Graphics2D g1 = (Graphics2D) g;
+			g1.setStroke(new BasicStroke(3));
+			g1.drawLine(x, y, x + xl, y + yl);
 		}
 
 		verifyCode = captchaGener.gen(IMAGE_VERIFICATION_LENGTH);
