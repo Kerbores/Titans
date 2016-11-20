@@ -22,8 +22,7 @@ public class CSRFProtectPostProcessor extends AbstractProcessor {
 	@Override
 	public void process(ActionContext ac) throws Throwable {
 		HttpServletRequest request = ac.getRequest();
-		
-		if ("XMLHttpRequest".equals(request.getHeader("X-Requested-With"))) {//针对ajax请求进行拦截吧
+		if ("XMLHttpRequest".equals(request.getHeader("X-Requested-With"))) {// 针对ajax请求进行拦截吧
 			if (CSRFTokenManager.hasValidRequestTokenHeader(request)) {
 				doNext(ac);
 			} else {
