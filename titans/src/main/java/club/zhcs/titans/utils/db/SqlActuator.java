@@ -22,8 +22,8 @@ public class SqlActuator {
 	/**
 	 * 执行报表或者查询类sql<br>
 	 * 通过Sqls.creat(""),sql.vars().set(key,val)/sql.params().set(key,value)
-	 * 可很方便的创建各种自定义的sql,详情见 <a
-	 * href='http://api.kerbores.com/nutz/dao/customized_sql.html'>NUTZ
+	 * 可很方便的创建各种自定义的sql,详情见
+	 * <a href='http://api.kerbores.com/nutz/dao/customized_sql.html'>NUTZ
 	 * 自定义SQL</a>
 	 *
 	 * @param sql
@@ -47,7 +47,7 @@ public class SqlActuator {
 
 	public static club.zhcs.titans.utils.db.Pager<Record> runReportSql(Sql sql, Dao dao, Pager pager) {
 		// 执行count
-		Sql countSql = Sqls.create("SELECT COUNT(1) FROM (" + sql.getSourceSql() + ") as COUNTX");
+		Sql countSql = Sqls.create("SELECT COUNT(1) FROM (" + sql.toString() + ") as COUNTX");
 		countSql.setCallback(Sqls.callback.integer());
 		dao.execute(countSql);
 
