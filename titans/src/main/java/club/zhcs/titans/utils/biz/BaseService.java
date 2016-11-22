@@ -14,6 +14,7 @@ import org.nutz.dao.entity.Record;
 import org.nutz.dao.entity.annotation.Column;
 import org.nutz.dao.entity.annotation.Id;
 import org.nutz.dao.sql.Sql;
+import org.nutz.dao.util.cri.SqlExpressionGroup;
 import org.nutz.ioc.impl.PropertiesProxy;
 import org.nutz.ioc.loader.annotation.IocBean;
 import org.nutz.json.Json;
@@ -322,13 +323,17 @@ public class BaseService<T extends Entity> extends IdNameEntityService<T> {
 			cnd = Cnd.NEW();
 		}
 		int index = 0;
+		SqlExpressionGroup expressionGroup = null;
 		for (String field : fields) {
 			if (index == 0) {
-				cnd = cnd.and(field, "like", searchKey);
+				expressionGroup = Cnd.exps(field, "like", searchKey);
 			} else {
-				cnd = cnd.or(field, "like", searchKey);
+				expressionGroup = expressionGroup.or(field, "like", searchKey);
 			}
 			index++;
+		}
+		if (expressionGroup != null) {
+			cnd = cnd.and(expressionGroup);
 		}
 		Pager<T> pager = new Pager<T>(PAGESIZE, page);
 		pager.setEntities(query(cnd, page));
