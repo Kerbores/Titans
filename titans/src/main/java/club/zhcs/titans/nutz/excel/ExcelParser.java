@@ -1,0 +1,84 @@
+package club.zhcs.titans.nutz.excel;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.DateUtil;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.nutz.lang.Times;
+
+/**
+ * excel解析器
+ * @author JiangKun
+ * @date 2016年12月20日 下午2:47:12
+ */
+public class ExcelParser {
+	
+	@SuppressWarnings("deprecation")
+	public static List<List<String>> parseExcel(InputStream in) {
+		Workbook workbook = null;
+		try {
+			workbook = new XSSFWorkbook(in);
+			List<List<String>> records = new ArrayList<List<String>>();
+			Sheet sheet = workbook.getSheetAt(0); // 遍历第一个Sheet
+			
+			for (Row row : sheet) {
+				List<String> list = new ArrayList<String>();
+				Iterator<Cell> it = row.cellIterator();
+				while (it.hasNext()) {
+					Cell cell = it.next();
+					int cellType = cell.getCellType();
+					String cellValue = null;
+					if (cellType == CellType.STRING.getCode()) // 文本
+						cellValue = cell.getRichStringCellValue().getString();
+					else if (cellType == CellType.NUMERIC.getCode()) { // 数字、日期
+						if (DateUtil.isCellDateFormatted(cell)) {
+							cellValue = Times.format("yyyy-MM-dd HH:mm:ss", cell.getDateCellValue());
+						} else {
+							cellValue = String.valueOf(cell.getNumericCellValue());
+						}
+					} else if (cellType == CellType.BOOLEAN.getCode()) {// 布尔型
+						cellValue = String.valueOf(cell.getBooleanCellValue());
+					} else if (cellType == CellType.BLANK.getCode()) { // 空白
+						
+					} else if (cellType == CellType.ERROR.getCode()) { // 错误
+						cellValue = "ERROR";
+					} else
+						cellValue = "";
+					list.add(cellValue);
+				}
+				records.add(list);
+			}
+			return records;
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if(workbook!=null)
+					workbook.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		return null;
+	}
+	
+	public static void main(String[] args){
+		try {
+			List<List<String>> records = parseExcel(new FileInputStream(new File("D:/employee_template.xlsx")));
+			System.out.println(records);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+}
