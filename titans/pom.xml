@@ -126,8 +126,9 @@
 	</dependencies>
 	<distributionManagement>
 		<snapshotRepository>
-			<id>ossrh</id>
-			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+			<id>nutzcn-snapshots</id>
+			<name>NutzCN snapshot repository</name>
+			<url>https://jfrog.nutz.cn/artifactory/snapshots</url>
 		</snapshotRepository>
 		<repository>
 			<id>ossrh</id>
