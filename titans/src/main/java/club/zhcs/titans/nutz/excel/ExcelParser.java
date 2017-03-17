@@ -7,6 +7,7 @@ import org.nutz.lang.Times;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -25,14 +26,16 @@ public class ExcelParser {
             List<List<String>> records = new ArrayList<List<String>>();
             Sheet sheet = workbook.getSheetAt(0); // 遍历第一个Sheet
 
-//            //第一行头部的cell数量为每一行默认数量
-//            short topIndex = sheet.getTopRow();
-//            Row topRow = sheet.getRow(topIndex);
-//            Iterator<Cell> it = topRow.cellIterator();
-            int headLength = 5;
-//            while (it.hasNext()) {
-//                headLength++;
-//            }
+            //第一行头部的cell数量为每一行默认数量
+            Row topRow = sheet.getRow(sheet.getTopRow());
+            Iterator<Cell> it = topRow.cellIterator();
+            int headLength = 0;
+            while (it.hasNext()) {
+                //头部为空cell为止
+                if (it.next() == null)
+                    break;
+                headLength++;
+            }
 
             //遍历每一列
             for (Row row : sheet) {
