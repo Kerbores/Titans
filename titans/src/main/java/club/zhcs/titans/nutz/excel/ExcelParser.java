@@ -4,12 +4,9 @@ import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.nutz.lang.Times;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -28,13 +25,27 @@ public class ExcelParser {
             List<List<String>> records = new ArrayList<List<String>>();
             Sheet sheet = workbook.getSheetAt(0); // 遍历第一个Sheet
 
+//            //第一行头部的cell数量为每一行默认数量
+//            short topIndex = sheet.getTopRow();
+//            Row topRow = sheet.getRow(topIndex);
+//            Iterator<Cell> it = topRow.cellIterator();
+            int headLength = 5;
+//            while (it.hasNext()) {
+//                headLength++;
+//            }
+
+            //遍历每一列
             for (Row row : sheet) {
                 List<String> list = new ArrayList<String>();
-                Iterator<Cell> it = row.cellIterator();
-                while (it.hasNext()) {
-                    Cell cell = it.next();
-                    int cellType = cell.getCellType();
+                for (int i = 0; i < headLength; i++) {
+                    Cell cell = row.getCell(i);
                     String cellValue = null;
+                    if (cell == null) {
+                        cellValue = "";
+                        list.add(cellValue);
+                        continue;
+                    }
+                    int cellType = cell.getCellType();
                     if (cellType == CellType.STRING.getCode()) // 文本
                         cellValue = cell.getRichStringCellValue().getString();
                     else if (cellType == CellType.NUMERIC.getCode()) { // 数字、日期
@@ -69,12 +80,4 @@ public class ExcelParser {
         return null;
     }
 
-    public static void main(String[] args) {
-        try {
-            List<List<String>> records = parseExcel(new FileInputStream(new File("D:/employee_template.xlsx")));
-            System.out.println(records);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 }
