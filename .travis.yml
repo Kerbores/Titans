@@ -1,5 +1,13 @@
+sudo: false
 language: java
+script: mvn -Dmaven.test.skip=true clean source:jar deploy --settings mvn_settings.xml --fail-at-end
 jdk:
-  - oraclejdk7
-  - openjdk7
-  - openjdk6
+  - oraclejdk8
+# whitelist
+branches:
+  only:
+    - master
+notifications:
+  email: false
+before_install:
+  - export TZ=Asia/Shanghai
