@@ -27,7 +27,7 @@ public class ExcelParser {
             Sheet sheet = workbook.getSheetAt(0); // 遍历第一个Sheet
 
             //第一行头部的cell数量为每一行默认数量
-            Row topRow = sheet.getRow(0);//这里必须给0 标记头行
+            Row topRow = sheet.getRow(0);//这里必须给0
             Iterator<Cell> it = topRow.cellIterator();
             int headLength = 0;
             while (it.hasNext()) {
