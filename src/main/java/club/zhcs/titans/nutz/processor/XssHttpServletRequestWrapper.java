@@ -47,13 +47,7 @@ public class XssHttpServletRequestWrapper extends HttpServletRequestWrapper {
 		.replaceAll("\\(", "&#40;")
 		.replaceAll("\\)", "&#41;")
 		.replaceAll("'", "&#39;")
-		.replaceAll("eval\\((.*)\\)", "")
-		.replaceAll("[\\\"\\\'][\\s]*javascript:(.*)[\\\"\\\']","")
-		.replaceAll(".*[D|d][O|o][C|c][U|u][M|m][E|e][N|n][T|t]\\.[C|c][O|o]{2}[K|k][I|i][E|e].*", "")//document.cookie
-		.replaceAll(".*<[S|s][C|c][R|r][I|i][P|p][T|t]>.*</[S|s][C|c][R|r][I|i][P|p][T|t]>.*","")//script脚本注入
-		.replaceAll(".*[E|e][V|v][A|a][L|l]\\s*\\(.*\\).*", "") //EVAL
 		;
 		return value;
 	}
-
 }
