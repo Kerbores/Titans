@@ -23,8 +23,4 @@ public class SQLFormater {
 		return Files.read(sqlFile).replaceAll(System.getProperty("line.separator"), " ").replaceAll("\\s{2,}", " ");
 	}
 
-	public static void main(String[] args) {
-		System.err.println(formatSqlFile(new File("C:\\Users\\wkipy\\Desktop\\kerbores_user_a.sql")));
-	}
-
 }
