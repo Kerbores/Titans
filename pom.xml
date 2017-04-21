@@ -131,8 +131,8 @@
 			<url>https://jfrog.nutz.cn/artifactory/snapshots</url>
 		</snapshotRepository>
 		<repository>
-			<id>ossrh</id>
-			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+			<id>nutzcn-release</id>
+			<url>https://jfrog.nutz.cn/artifactory/jcenter</url>
 		</repository>
 	</distributionManagement>
 	<name>${project.groupId}:${project.artifactId}</name>
