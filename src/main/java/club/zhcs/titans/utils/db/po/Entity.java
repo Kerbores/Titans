@@ -1,5 +1,7 @@
 package club.zhcs.titans.utils.db.po;
 
+import java.io.Serializable;
+
 import org.nutz.dao.entity.annotation.Id;
 import org.nutz.json.Json;
 import org.nutz.json.JsonFormat;
@@ -9,8 +11,12 @@ import org.nutz.json.JsonFormat;
  *
  *         create at 2015年5月6日 上午9:31:20
  */
-public class Entity {
+public class Entity implements Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	@Id
 	private int id;
 
