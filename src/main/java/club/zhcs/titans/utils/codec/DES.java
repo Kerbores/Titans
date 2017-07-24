@@ -34,6 +34,11 @@ public class DES {
 		return decrypt(data, DEFAULT_KEY);
 	}
 
+	public static void main(String[] args) {
+		System.err.println(encrypt("1"));
+		System.err.println(decrypt("oE5W4cm/8io="));
+	}
+
 	/**
 	 * Description 根据键值进行加密
 	 * 

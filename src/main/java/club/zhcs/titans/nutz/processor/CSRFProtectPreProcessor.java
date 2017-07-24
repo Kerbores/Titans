@@ -1,6 +1,7 @@
 package club.zhcs.titans.nutz.processor;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.nutz.log.Log;
 import org.nutz.log.Logs;
@@ -30,10 +31,13 @@ public class CSRFProtectPreProcessor extends AbstractProcessor{
 	@Override
 	public void process(ActionContext ac) throws Throwable {
 		HttpServletRequest request = ac.getRequest();
+		HttpServletResponse response = ac.getResponse();
 		//针对页面请求拦截处理,非AJAX的GET请求
-		if(!"XMLHttpRequest".equals(request.getHeader("X-Requested-With")) && "GET".equalsIgnoreCase(request.getMethod())){
+		if (!"XMLHttpRequest".equals(request.getHeader("X-Requested-With")) && "GET".equalsIgnoreCase(request.getMethod())) {
 			//提供给layout展示
-			request.setAttribute("CSRFToken", CSRFTokenManager.getTokenForSession(request.getSession()));
+			String token = CSRFTokenManager.getTokenForSession(request.getSession());
+			request.setAttribute("CSRFToken", token);
+			response.addHeader("CSRFToken", token);// 前后端分离的也从header带回去
 		}
 		doNext(ac);
 	}

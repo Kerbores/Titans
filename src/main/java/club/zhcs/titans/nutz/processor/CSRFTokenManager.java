@@ -1,8 +1,9 @@
 package club.zhcs.titans.nutz.processor;
 
-import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+
+import org.nutz.lang.random.R;
 
 /**
  * 
@@ -33,7 +34,7 @@ public final class CSRFTokenManager {
 		synchronized (session) {
 			token = (String) session.getAttribute(CSRF_TOKEN_FOR_SESSION_ATTR_NAME);
 			if (null == token) {
-				token = UUID.randomUUID().toString();
+				token = R.UU32();
 				session.setAttribute(CSRF_TOKEN_FOR_SESSION_ATTR_NAME, token);
 			}
 		}

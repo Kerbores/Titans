@@ -29,9 +29,9 @@ public class KerboresFailProcessor extends FailProcessor {
 
 	@Override
 	public void process(ActionContext ac) throws Throwable {
+		log.error(ac.getError());
 		if (Strings.equals(okView, "json") && ac.getError() != null) {// 产生了错误而且是json视图
-			log.debugf("response json error msg with %s ", this.getClass().getName());
-			ac.getError().printStackTrace();
+			log.errorf("response json error msg with %s ", this.getClass().getName());
 			Mvcs.write(ac.getResponse(), Result.exception(ac.getError().getMessage()), JsonFormat.nice());// 写回错误信息
 			return;
 		}
