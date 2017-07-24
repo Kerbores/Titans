@@ -112,7 +112,7 @@ public class AES {
 			String originalString = new String(original, "utf-8");
 			return originalString;
 		} catch (Exception e) {
-			log.equals(e);
+			log.error(e);
 			return null;
 		}
 	}

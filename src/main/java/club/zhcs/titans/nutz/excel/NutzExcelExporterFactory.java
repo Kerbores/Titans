@@ -7,13 +7,12 @@ import club.zhcs.titans.utils.db.po.Entity;
  * @date 2016年11月23日 下午3:17:22
  */
 public class NutzExcelExporterFactory {
-	
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public static <T extends Entity> EntityExcelExporter<T> getEntityExporter(final Class<T> requiredType){
-		return (NutzEntityExcelExporter<T>)new NutzEntityExcelExporter();
+
+	public static <T extends Entity> EntityExcelExporter<T> getEntityExporter(final Class<T> requiredType) {
+		return new NutzEntityExcelExporter();
 	}
-	
-	public static RecordExcelExporter getRecordExporter(){
+
+	public static RecordExcelExporter getRecordExporter() {
 		return new NutzRecordExcelExporter();
 	}
 
