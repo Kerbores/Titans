@@ -16,6 +16,11 @@ import org.nutz.lang.util.NutMap;
 @Table("kerbores_bak_data")
 @Comment("已删除数据的备份")
 public class BakData extends Entity {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	@Column("d_table_name")
 	@Comment("数据表名")
 	private String table;
