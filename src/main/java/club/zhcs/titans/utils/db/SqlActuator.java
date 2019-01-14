@@ -72,6 +72,7 @@ public class SqlActuator {
 
 	public static <T> T run(Sql sql, Dao dao, Class<T> classOfEntity) {
 		sql.setCallback(Sqls.callback.entity());
+		sql.setEntity(dao.getEntity(classOfEntity));
 		dao.execute(sql);
 		return sql.getObject(classOfEntity);
 	}
