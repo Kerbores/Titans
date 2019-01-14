@@ -1,9 +1,10 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>club.zhcs</groupId>
 	<artifactId>titans</artifactId>
-	<version>2.0.8</version>
+	<version>2.0.8-SNAPSHOT</version>
 	<build>
 		<plugins>
 			<plugin>
@@ -126,7 +127,7 @@
 	</dependencies>
 	<distributionManagement>
 		<snapshotRepository>
-			<id>nutzcn-snapshots</id>
+			<id>nutz</id>
 			<name>NutzCN snapshot repository</name>
 			<url>https://jfrog.nutz.cn/artifactory/snapshots</url>
 		</snapshotRepository>
@@ -152,6 +153,9 @@
 			<organizationUrl>http://thunder.kerbores.com</organizationUrl>
 		</developer>
 	</developers>
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
 	<scm>
 		<connection>scm:git:https://github.com/Kerbores/Titans.git</connection>
 		<developerConnection>scm:git:https://github.com/Kerbores/Titans.git</developerConnection>
